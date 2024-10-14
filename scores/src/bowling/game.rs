@@ -13,21 +13,19 @@ impl BowlingGame {
         if self.ended {
             return Err(Error::GameAlreadyEnded);
         }
+
         if self.current_frame <= 10 && roll1 + roll2 > 10 {
             return Err(Error::InvalidFrame);
         }
+        
         Ok(0)
     }
 
     pub fn end_score(&self) -> u32 {
         if self.ended {
-            0
-        } else {
-            self.score
+            return 0;
         }
-    }
 
-    pub fn calculate_score(&self) -> usize {
-        self.current_frame + self.score as usize
+        self.score
     }
 }
