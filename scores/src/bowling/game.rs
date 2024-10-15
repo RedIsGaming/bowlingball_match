@@ -1,3 +1,4 @@
+use std::{ops::AddAssign, sync::Mutex};
 use crate::bowling::{frame::*, error::*};
 
 #[derive(Debug, Default)]
@@ -27,5 +28,29 @@ impl BowlingGame {
         }
 
         self.score
+    }
+
+    pub fn bowling<'a>(
+        bowling_game: &'a mut BowlingGame, frame: Frame, counter: &Mutex<u32>, bonus_frame: u32
+    ) -> Result<&'a BowlingGame, Error> {
+        bowling_game.frame(frame.roll1, frame.roll2)?;
+        bowling_game.frames.push(frame);
+        bowling_game.current_frame.add_assign(1);
+        bowling_game.score = *counter.lock().unwrap() + bonus_frame;
+    
+        Ok(bowling_game)
+    }
+    
+    pub fn print_turn(bowling_game: &BowlingGame, frame: &Frame, counter: &Mutex<u32>, bonus_frame: u32) {
+        println!("The current frame is: {}|{}", frame.roll1, frame.roll2);
+        println!("The current match is on round: {} with score: {}/10. The total score is: {}\n", 
+            bowling_game.current_frame, 
+            frame.roll1 + frame.roll2, 
+            *counter.lock().unwrap() + bonus_frame
+        )
+    }
+
+    pub fn end_turn(bowling_game: &BowlingGame) {
+        println!("The bowling ball match has ended. Your end score is: {}", bowling_game.end_score())
     }
 }
