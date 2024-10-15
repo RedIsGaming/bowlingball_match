@@ -1,5 +1,5 @@
 [workspace]
-members = ["scores"]
+members = ["scores", "tests"]
 resolver = "2"
 
 [profile.dev]
