@@ -31,9 +31,7 @@ fn call_spare<'a>(
     Ok(bowling_game)
 }
 
-fn game_turn(bowling_game: &mut BowlingGame) {
-    let counter = Mutex::new(0);
-
+fn game_turn(bowling_game: &mut BowlingGame, counter: &Mutex<u32>) {
     for _ in bowling_game.current_frame..=MAX_FRAMES_TURNS as usize {
         let random_roll1 = random_frame_number(MAX_FRAMES_TURNS);
         let pins = MAX_FRAMES_TURNS.sub(random_roll1);
@@ -42,8 +40,8 @@ fn game_turn(bowling_game: &mut BowlingGame) {
         
         counter.try_lock().unwrap().add_assign(frame.roll1.add(frame.roll2));
 
-        BowlingGame::print_turn(bowling_game, &frame, &counter, Default::default());
-        BowlingGame::bowling(bowling_game, frame, &counter, Default::default()).unwrap();
+        BowlingGame::print_turn(bowling_game, &frame, counter, Default::default());
+        BowlingGame::bowling(bowling_game, frame, counter, Default::default()).unwrap();
     }
 }
 
@@ -57,7 +55,7 @@ fn turn(mut bowling_game: BowlingGame) -> Result<BowlingGame, Error> {
     bowling_game.current_frame = 1;
     
     println!("The bowling ball match has started. Your start score is: {}\n", counter.lock().unwrap());
-    game_turn(&mut bowling_game);
+    game_turn(&mut bowling_game, &counter);
 
     let strike = Frame::strike_iter(&bowling_game);
     let spare = Frame::spare_iter(&bowling_game);
